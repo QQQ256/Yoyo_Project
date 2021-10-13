@@ -34,7 +34,7 @@ public class PlayerController : MonoBehaviour
     private BoxCollider2D _collider2D;
     #region private members
     
-    private Rigidbody2D rb;
+    public Rigidbody2D rb;
     private Animator _animator;
     private float horizontalInput;
     private float verticalInput;

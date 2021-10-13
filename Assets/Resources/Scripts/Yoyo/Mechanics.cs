@@ -83,7 +83,8 @@ public class Mechanics : MonoBehaviour
 
         #region mechanic_1
 
-        if (Input.GetMouseButtonDown(0) && !isUseSkills)
+        // if (Input.GetMouseButtonDown(0) && !isUseSkills)
+        if (Input.GetKeyDown(KeyCode.J) && !isUseSkills)
         {
             isMechanic_1 = true;
             isUseSkills = true;
@@ -104,13 +105,15 @@ public class Mechanics : MonoBehaviour
         #endregion
 
         #region mechanic_2
-        if (Input.GetMouseButtonDown(1) && !isUseSkills  && PlayerController.Instance.isGround && !WallCheck.isWall)//player cannot use walk dog when he jumps
+        // if (Input.GetMouseButtonDown(1) && !isUseSkills  && PlayerController.Instance.isGround && !WallCheck.isWall)//player cannot use walk dog when he jumps
+        if (Input.GetKeyDown(KeyCode.K) && !isUseSkills  && PlayerController.Instance.isGround && !WallCheck.isWall)//player cannot use walk dog when he jumps
         {
             if (isUseSkills)
             {
                 return;
             }
             walkDogPoint = new Vector3(playerPoint.x + direction * 20f, playerPoint.y);
+            PlayerController.Instance.rb.bodyType = RigidbodyType2D.Kinematic;
             isMechanic_2 = true;
             isUseSkills = true;
             InstantiateYoyo(direction);
@@ -122,14 +125,14 @@ public class Mechanics : MonoBehaviour
             {
                 return;
             }
-            tempYoyo.transform.position = Vector2.MoveTowards(tempYoyo.transform.position, walkDogPoint, 6 * Time.deltaTime);
+            tempYoyo.transform.position = Vector2.MoveTowards(tempYoyo.transform.position, walkDogPoint, 12* Time.deltaTime);
             WalkDog();
             if (yoyoMaxDistance)//max rope length of yoyo, player move with yoyo together
             {
                 if (!WallCheck.isWall)
                 {
                     //when the player in the gap, player should not chase the yoyo, instead, it will stay in that place
-                    transform.position = Vector2.MoveTowards(transform.position, walkDogPoint, 6 * Time.deltaTime);
+                    transform.position = Vector2.MoveTowards(transform.position, walkDogPoint, 12 * Time.deltaTime);
                     _animator.SetFloat("speed",1f);//TODO
                     if (Vector2.Distance(transform.position,walkDogPoint) <= 0.5f)
                     {
@@ -153,7 +156,8 @@ public class Mechanics : MonoBehaviour
 
         #region dynamic_1
 
-        if (Input.GetMouseButtonDown(2) && !isUseSkills)
+        if (Input.GetKeyDown(KeyCode.L) && !isUseSkills)
+        // if (Input.GetMouseButtonDown(2) && !isUseSkills)
         {
             isDynamic_1 = true;
             isUseSkills = true;
@@ -300,6 +304,7 @@ public class Mechanics : MonoBehaviour
         isMechanic_2 = false;
         yoyoMaxDistance = false;
         isJumped = false;
+        PlayerController.Instance.rb.bodyType = RigidbodyType2D.Dynamic;
         Destroy(tempYoyo);
     }
 
