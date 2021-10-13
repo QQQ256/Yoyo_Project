@@ -78,6 +78,9 @@ public class Mechanics : MonoBehaviour
         playerPoint = transform.position;
         direction = transform.localScale.x;
 
+        if (!PlayerController.Instance.hasYoyo)
+            return;
+
         #region mechanic_1
 
         if (Input.GetMouseButtonDown(0) && !isUseSkills)
@@ -245,7 +248,12 @@ public class Mechanics : MonoBehaviour
                 {
                     Transform childGameObject = tempYoyo.transform.GetChild(0);//make grab items not the yoyo's child object
                     childGameObject.transform.parent = null;
+                    // if (Vector2.Distance(childGameObject.transform.position,playerPoint) < 0.5f)
+                    // {
+                    //     Destroy(childGameObject.gameObject);
+                    // }
                     grabItems = false;
+                    // Destroy(childGameObject.gameObject);
                     // isMechanic_1 = false;
                 }
                 
@@ -281,7 +289,7 @@ public class Mechanics : MonoBehaviour
         else if (WallCheck.isWall && Vector2.Distance(tempYoyo.transform.position,destinationPoint) >= 1f)
         {
             tempYoyo.transform.position = Vector2.MoveTowards(tempYoyo.transform.position, destinationPoint, 3 * Time.deltaTime);
-            Debug.Log("FUCK");
+            // Debug.Log("FUCK");
         }
     }
 
@@ -330,7 +338,7 @@ public class Mechanics : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.collider.CompareTag("Box")  && isMechanic_1)
+        if (other.collider.CompareTag("Breakfast")  && isMechanic_1)
         {
             grabItems = true;
         }

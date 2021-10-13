@@ -3,12 +3,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField]
-    private Rigidbody2D rb;
-    private Animator _animator;
-    private float horizontalInput;
-    private float verticalInput;
-
+    [Header("Player in the room")] 
+    public GameObject Bag;
+    public bool hasBag;
+    public bool hasYoyo;
     public static PlayerController Instance;
     public float speed, jumpForce;
     [Header("Player State")] 
@@ -35,7 +33,12 @@ public class PlayerController : MonoBehaviour
 
     private BoxCollider2D _collider2D;
     #region private members
-
+    
+    private Rigidbody2D rb;
+    private Animator _animator;
+    private float horizontalInput;
+    private float verticalInput;
+    
     private int animationCount;
     #endregion
 
@@ -52,8 +55,8 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        Bag.SetActive(false);
         _collider2D = GetComponent<BoxCollider2D>();
-        playerHeight = _collider2D.size.y;
         // GameManager.Instance.IsPlayer(this);
         if(isIdle) return;
         //获取面板中的image

@@ -36,7 +36,7 @@ public class yoyoRotation : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D other)
     {
-        if (other.collider.CompareTag("Box") && Mechanics.Instance.isMechanic_1)
+        if (other.collider.CompareTag("Breakfast") && Mechanics.Instance.isMechanic_1)
         {
             other.transform.parent = transform;
             // other.transform.rotation = Quaternion. Euler (0.0f, 0.0f, other.transform.rotation. z * -1.0f);
