@@ -84,7 +84,7 @@ public class PlayerController : MonoBehaviour
             if (isGround)
             {
                 Jump();
-                // canJump2 = true;
+                canJump2 = true;
             }
             // else if (canJump2)
             // {

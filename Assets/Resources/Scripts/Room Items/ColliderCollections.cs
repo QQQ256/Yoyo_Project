@@ -23,5 +23,12 @@ public class ColliderCollections : MonoBehaviour
         //         }
         //         break;
         // }
+        var colliderName = other.collider.name;
+        switch (colliderName)
+        {
+            case "YOYO":
+                Mechanics.Instance.destinationPoint = PlayerController.Instance.transform.position;
+                break;
+        }
     }
 }

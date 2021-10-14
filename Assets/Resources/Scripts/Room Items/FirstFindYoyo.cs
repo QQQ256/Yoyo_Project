@@ -17,7 +17,6 @@ public class FirstFindYoyo : MonoBehaviour
         {
             PlayerController.Instance.hasYoyo = true;
             Destroy(gameObject);
-            Debug.Log("11111");
         }
     }
 }

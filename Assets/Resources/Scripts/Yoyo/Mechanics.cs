@@ -10,23 +10,32 @@ using Random = System.Random;
 public class Mechanics : MonoBehaviour
 {
     
-    public GameObject yoyo;
-    public GameObject tempYoyo;
-    public int yoyoRopeLength;
+    
     public float direction;//the direction the player stands
     public bool isInstantiated;//whether the yoyo is instantiated or not
     public bool isUseSkills;//when use one skill, other skill cannot be used
     public Vector2 destinationPoint;
+    public bool isJumped;
+
+    [Header("Yoyo Basic Information")]
+    public GameObject yoyo;
+    public GameObject tempYoyo;
+    public int yoyoRopeLength;
 
 
-    [Header("Mechanic1&2")]
-    public bool isMechanic_1,isMechanic_2;//control whether use the mechanic-1 or not
+    [Header("Mechanic1")] 
+    public bool isMechanic_1;//control whether use the mechanic-1 or not
+    public int mechanic1YoyoSpeed;
+
+
+    [Header("Mechanic2")]
+    public bool isMechanic_2;
+    public int mechanic2YoyoSpeed;
+    public int walkDogDistance;
+
 
     [Header("Dynamic1")]
     public bool isDynamic_1;
-
-    public bool isJumped;
-
     public Transform dynamic1_InstantiatePoint;
 
 
@@ -61,7 +70,7 @@ public class Mechanics : MonoBehaviour
 
     private void Awake()
     {
-        DontDestroyOnLoad(gameObject);
+        _instance = this;
     }
 
     // Start is called before the first frame update
@@ -97,9 +106,12 @@ public class Mechanics : MonoBehaviour
             {
                 return;
             }
-            tempYoyo.transform.position = Vector2.MoveTowards(tempYoyo.transform.position, destinationPoint, 3 * Time.deltaTime);
+
+            var position = tempYoyo.transform.position;
+            position = Vector2.MoveTowards(position, destinationPoint, mechanic1YoyoSpeed * Time.deltaTime);
             YoyoReturnToPlayer();
-            tempYoyo.transform.position = Vector2.MoveTowards(tempYoyo.transform.position, destinationPoint, 3 * Time.deltaTime);
+            position = Vector2.MoveTowards(position, destinationPoint, mechanic1YoyoSpeed * Time.deltaTime);
+            tempYoyo.transform.position = position;
         }
 
         #endregion
@@ -112,7 +124,7 @@ public class Mechanics : MonoBehaviour
             {
                 return;
             }
-            walkDogPoint = new Vector3(playerPoint.x + direction * 20f, playerPoint.y);
+            walkDogPoint = new Vector3(playerPoint.x + direction * walkDogDistance, playerPoint.y);
             PlayerController.Instance.rb.bodyType = RigidbodyType2D.Kinematic;
             isMechanic_2 = true;
             isUseSkills = true;
@@ -125,14 +137,14 @@ public class Mechanics : MonoBehaviour
             {
                 return;
             }
-            tempYoyo.transform.position = Vector2.MoveTowards(tempYoyo.transform.position, walkDogPoint, 12* Time.deltaTime);
+            tempYoyo.transform.position = Vector2.MoveTowards(tempYoyo.transform.position, walkDogPoint, mechanic2YoyoSpeed* Time.deltaTime);
             WalkDog();
             if (yoyoMaxDistance)//max rope length of yoyo, player move with yoyo together
             {
                 if (!WallCheck.isWall)
                 {
                     //when the player in the gap, player should not chase the yoyo, instead, it will stay in that place
-                    transform.position = Vector2.MoveTowards(transform.position, walkDogPoint, 12 * Time.deltaTime);
+                    transform.position = Vector2.MoveTowards(transform.position, walkDogPoint, mechanic2YoyoSpeed * Time.deltaTime);
                     _animator.SetFloat("speed",1f);//TODO
                     if (Vector2.Distance(transform.position,walkDogPoint) <= 0.5f)
                     {
@@ -145,7 +157,6 @@ public class Mechanics : MonoBehaviour
                     walkDogPoint = playerPoint;
                     
                 }
-                
             }
             // tempYoyo.transform.position = Vector2.MoveTowards(tempYoyo.transform.position, destinationPoint, 3 * Time.deltaTime);
            
@@ -154,26 +165,45 @@ public class Mechanics : MonoBehaviour
 
         #endregion
 
-        #region dynamic_1
+        #region dynamic_1 logic part
 
-        if (Input.GetKeyDown(KeyCode.L) && !isUseSkills)
-        // if (Input.GetMouseButtonDown(2) && !isUseSkills)
+        if (PlayerController.Instance.canJump2 && !PlayerController.Instance.isGround)
+        // if (PlayerController.Instance.rb.velocity.y > 0 && PlayerController.Instance.canJump2)
         {
-            isDynamic_1 = true;
-            isUseSkills = true;
-            InstantiateYoyoInYAxis();
-        }
-
-        if (isDynamic_1 && isJumped && rd.velocity.y < 0.1f)
-        {
-            YoyoReturnToPlayer();
-            if (rd.velocity.y < 0.1f)
+            if (Input.GetKeyDown(KeyCode.Space) && !isUseSkills)
+                // if (Input.GetMouseButtonDown(2) && !isUseSkills)
             {
-                destinationPoint = playerPoint;
-                tempYoyo.transform.position = Vector2.MoveTowards(tempYoyo.transform.position, destinationPoint, 7 * Time.deltaTime);
+                isDynamic_1 = true;
+                isUseSkills = true;
+                InstantiateYoyoInYAxis();
             }
-            // tempYoyo.transform.position = Vector2.MoveTowards(tempYoyo.transform.position, destinationPoint, 7 * Time.deltaTime);
+
+            if (isDynamic_1 && isJumped && rd.velocity.y < 0.1f)
+            {
+                YoyoReturnToPlayer();
+                if (rd.velocity.y < 0.1f)
+                {
+                    destinationPoint = playerPoint;
+                    tempYoyo.transform.position = Vector2.MoveTowards(tempYoyo.transform.position, destinationPoint, 7 * Time.deltaTime);
+                }
+                // tempYoyo.transform.position = Vector2.MoveTowards(tempYoyo.transform.position, destinationPoint, 7 * Time.deltaTime);
+            }
         }
+
+        if (PlayerController.Instance.isGround && GameObject.Find("YOYO"))
+        {
+            if (isDynamic_1 && isJumped && rd.velocity.y < 0.1f)
+            {
+                YoyoReturnToPlayer();
+                if (rd.velocity.y < 0.1f)
+                {
+                    destinationPoint = playerPoint;
+                    tempYoyo.transform.position = Vector2.MoveTowards(tempYoyo.transform.position, destinationPoint, 7 * Time.deltaTime);
+                }
+                // tempYoyo.transform.position = Vector2.MoveTowards(tempYoyo.transform.position, destinationPoint, 7 * Time.deltaTime);
+            }
+        }
+        
         #endregion
     }
 
@@ -305,6 +335,7 @@ public class Mechanics : MonoBehaviour
         yoyoMaxDistance = false;
         isJumped = false;
         PlayerController.Instance.rb.bodyType = RigidbodyType2D.Dynamic;
+        PlayerController.Instance.canJump2 = false;
         Destroy(tempYoyo);
     }
 
@@ -346,6 +377,7 @@ public class Mechanics : MonoBehaviour
         if (other.collider.CompareTag("Breakfast")  && isMechanic_1)
         {
             grabItems = true;
+            //if grab items, don't go to other places, just return
         }
 
         if (other.collider.CompareTag("Yoyo") && isDynamic_1)
